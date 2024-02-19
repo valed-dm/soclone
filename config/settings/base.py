@@ -86,6 +86,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "soclone.questions",
     "soclone.users",
     # Your stuff: custom apps go here
 ]
