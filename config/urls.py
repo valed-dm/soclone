@@ -20,11 +20,10 @@ urlpatterns = [
     path("users/", include("soclone.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
-    # ...
+    path("callback/", include("allauth.urls")),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
-
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

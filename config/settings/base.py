@@ -82,6 +82,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
     "django_celery_beat",
 ]
 
@@ -318,6 +319,18 @@ SOCIALACCOUNT_ADAPTER = "soclone.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {"signup": "soclone.users.forms.UserSocialSignupForm"}
 
-
 # Your stuff...
 # ------------------------------------------------------------------------------
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        "APP": {
+            "client_id": "7f31b7c8191b16f7461f",
+            "secret": "ec72515b3bd42ca7c00ea502c1e327f4d6e409c8",
+            "key": "",
+        }
+    }
+}
