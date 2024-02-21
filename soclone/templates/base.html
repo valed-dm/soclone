@@ -27,7 +27,7 @@
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
     {% endblock css %}
     <!-- Latest javascript
-  ================================================== -->
+================================================== -->
     {# Placed at the top of the document so pages load faster with defer #}
     {% block javascript %}
       <!-- Bootstrap JS -->
@@ -54,63 +54,78 @@
                   aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'home' %}">Stack Overflow Clone</a>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'questions:questions' %}">Questions</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'questions:tags' %}">Tags</a>
-              </li>
-              {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'users:detail' request.user.pk %}">{% translate "My Profile" %}</a>
-                </li>
-                <li class="nav-item">
-                  {# URL provided by django-allauth/account/urls.py #}
-                  <a class="nav-link" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
-                </li>
-              {% else %}
-                {% if ACCOUNT_ALLOW_REGISTRATION %}
+          <div class="d-flex align-items-baseline w-100">
+            <div class="w-100">
+              <a class="navbar-brand" href="{% url 'home' %}">Stack Overflow Clone</a>
+            </div>
+            <div class="collapse navbar-collapse d-inline-flex"
+                 id="navbarSupportedContent">
+              <ul class="navbar-nav">
+                {% if request.user.is_authenticated %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:detail' request.user.pk %}">{% translate "My&nbspProfile" %}</a>
+                  </li>
                   <li class="nav-item">
                     {# URL provided by django-allauth/account/urls.py #}
-                    <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
+                    <a class="nav-link" href="{% url 'account_logout' %}">{% translate "Sign&nbspOut" %}</a>
+                  </li>
+                {% else %}
+                  {% if ACCOUNT_ALLOW_REGISTRATION %}
+                    <li class="nav-item">
+                      {# URL provided by django-allauth/account/urls.py #}
+                      <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% translate "Sign&nbspUp" %}</a>
+                    </li>
+                  {% endif %}
+                  <li class="nav-item">
+                    {# URL provided by django-allauth/account/urls.py #}
+                    <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign&nbspIn" %}</a>
                   </li>
                 {% endif %}
-                <li class="nav-item">
-                  {# URL provided by django-allauth/account/urls.py #}
-                  <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
-                </li>
-              {% endif %}
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
       </nav>
     </div>
-    <div class="container">
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            {{ message }}
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"></button>
+    <div class="container p-0 m-0">
+      <div class="row p-0 m-0">
+        <div class="col-1 p-0 m-0">
+          <ul class="nav flex-column">
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about' %}">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'questions:questions' %}">Questions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'questions:tags' %}">Tags</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="container">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                  {{ message }}
+                  <button type="button"
+                          class="btn-close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% block content %}
+              <p>Use this document as a way to quick start any new project.</p>
+            {% endblock content %}
           </div>
-        {% endfor %}
-      {% endif %}
-      {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
-      {% endblock content %}
+          <!-- /container -->
+        </div>
+      </div>
     </div>
-    <!-- /container -->
     {% block modal %}
     {% endblock modal %}
     {% block inline_javascript %}
