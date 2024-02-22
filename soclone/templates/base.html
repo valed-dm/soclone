@@ -55,30 +55,36 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="d-flex align-items-baseline w-100">
-            <div class="w-100">
+            <div class="d-flex align-items-baseline w-100">
               <a class="navbar-brand" href="{% url 'home' %}">Stack Overflow Clone</a>
+              <a class="nav nav-link nav-item" href="{% url 'about' %}">About</a>
             </div>
             <div class="collapse navbar-collapse d-inline-flex"
                  id="navbarSupportedContent">
               <ul class="navbar-nav">
                 {% if request.user.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'users:detail' request.user.pk %}">{% translate "My&nbspProfile" %}</a>
+                    <a class="nav nav-link nav-item"
+                       href="{% url 'users:detail' request.user.pk %}">{% translate "My&nbspProfile" %}</a>
                   </li>
                   <li class="nav-item">
                     {# URL provided by django-allauth/account/urls.py #}
-                    <a class="nav-link" href="{% url 'account_logout' %}">{% translate "Sign&nbspOut" %}</a>
+                    <a class="nav nav-link nav-item" href="{% url 'account_logout' %}">{% translate "Sign&nbspOut" %}</a>
                   </li>
                 {% else %}
                   {% if ACCOUNT_ALLOW_REGISTRATION %}
                     <li class="nav-item">
                       {# URL provided by django-allauth/account/urls.py #}
-                      <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% translate "Sign&nbspUp" %}</a>
+                      <a id="sign-up-link"
+                         class="nav nav-link nav-item"
+                         href="{% url 'account_signup' %}">{% translate "Sign&nbspUp" %}</a>
                     </li>
                   {% endif %}
                   <li class="nav-item">
                     {# URL provided by django-allauth/account/urls.py #}
-                    <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign&nbspIn" %}</a>
+                    <a id="log-in-link"
+                       class="nav nav-link nav-item"
+                       href="{% url 'account_login' %}">{% translate "Sign&nbspIn" %}</a>
                   </li>
                 {% endif %}
               </ul>
@@ -94,9 +100,9 @@
             <li class="nav-item active">
               <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'about' %}">About</a>
-            </li>
+            {#            <li class="nav-item">#}
+            {#              <a class="nav-link" href="{% url 'about' %}">About</a>#}
+            {#            </li>#}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'questions:questions' %}">Questions</a>
             </li>
