@@ -7,7 +7,7 @@
         {% for tag in tags_list %}
           <li>
             <a href="{% url 'questions:tags' %}">{{ tag.name|title }}</a>&nbsp
-            {{ tag.pub_date }}
+            {{ tag.created_at }}
           </li>
         {% endfor %}
       </ol>

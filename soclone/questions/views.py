@@ -17,8 +17,8 @@ class QuestionsView(generic.ListView):
 
         return (
             Question.objects.prefetch_related("tags")
-            .filter(pub_date__lte=timezone.now())
-            .order_by("-pub_date")[:10]
+            .filter(created_at__lte=timezone.now())
+            .order_by("-created_at")[:10]
         )
 
 
@@ -31,6 +31,6 @@ class TagsView(generic.ListView):
     def get_queryset(self):
         """Return the last 10 published tags."""
 
-        return Tag.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[
-            :10
-        ]
+        return Tag.objects.filter(created_at__lte=timezone.now()).order_by(
+            "-created_at"
+        )[:10]
