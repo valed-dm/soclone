@@ -1,18 +1,48 @@
 {% extends "base.html" %}
 
+{% load my_filters %}
+{% load static %}
+
 {% block content %}
   <div class="mx-auto">
     {% if questions_list %}
-      <ol>
-        {% for question in questions_list %}
-          <li>
-            <a href="{% url 'questions:questions' %}">{{ question.title|capfirst }}</a>
-            {% for tag in question.tags.all %}{{ tag }}{% endfor %}
-          </li>
-        {% endfor %}
-      </ol>
+      {% for question in questions_list %}
+        <div class="border border-1 border-primary m-2">
+          <div>
+            <span class="ms-2 text-success fw-bolder">
+              <img src="{% static "images/thumbnails/answer-24.png" %}" alt="Answered" />
+            {{ question.answers|default_if_none:0 }}</span>
+            <span class="ms-2 text-warning fw-bolder">
+              <img src="{% static "images/thumbnails/like-24.png" %}" alt="Like" />
+            {{ question.likes|default_if_none:0 }}</span>
+            <span class="ms-2 text-danger fw-bolder">
+              <img src="{% static "images/thumbnails/dislike-24.png" %}" alt="Dislike" />
+            {{ question.dislikes|default_if_none:0 }}</span>
+            <span class="ms-2 text-primary fw-bolder">
+              <img src="{% static "images/thumbnails/eye-24.png" %}" alt="Viewed" />
+            {{ question.views|default_if_none:0 }}</span>
+            <div>
+              <span class="ms-2 fs-5 fw-bolder">
+                <a href="{% url 'questions:questions' %}" class="text-decoration-none">{{ question.title|capfirst }}</a>
+              </span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                {% for tag in question.tags.all %}<span class="ms-2 px-1 bg-primary text-white">{{ tag.name }}</span>{% endfor %}
+                {% if not question.tags.all %}<span class="mx-2">not_tagged</span>{% endif %}
+              </div>
+              <div class="mx-2">
+                {{ question.user.email }}
+                &nbspasked&nbsp
+                <img src="{% static "images/thumbnails/time-24.png" %}" alt="Asked" />
+                {{ question.asked | timedelta_readable }}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     {% else %}
-      <p>No questions available.</p>
+      <span>No questions available.</span>
     {% endif %}
   </div>
 {% endblock content %}
