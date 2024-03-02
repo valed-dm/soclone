@@ -86,3 +86,17 @@ The following details how to deploy this application.
 ### Heroku
 
 See detailed [cookiecutter-django Heroku documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html).
+
+## Questions app blueprint
+
+Main questions page:
+
+[<img src="docs/images/img_01.png" width="1000"/>]()
+
+Blueprint for tags view:
+
+[<img src="docs/images/img_02.png" width="1000"/>]()
+
+QuestionsView(generic.ListView) SQL query:
+
+[<img src="docs/images/img_03.png" width="1000"/>]()
