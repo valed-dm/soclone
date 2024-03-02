@@ -5,6 +5,10 @@
 
 {% block content %}
   <div class="mx-auto">
+    <div class="d-flex justify-content-between">
+      <span class="fs-4">Top Questions</span>
+      <button type="button" class="btn btn-primary">Ask Question</button>
+    </div>
     {% if questions_list %}
       {% for question in questions_list %}
         <div class="border border-1 border-primary m-2">
