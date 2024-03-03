@@ -1,12 +1,16 @@
 """Views for the questions app."""
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.db.models import F
 from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models.query import QuerySet
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 
+from soclone.questions.forms import QuestionForm
 from soclone.questions.models import Question
 from soclone.questions.models import QuestionView
 from soclone.questions.models import QuestionVote
@@ -66,3 +70,18 @@ class TagsView(generic.ListView):
         return Tag.objects.filter(created_at__lte=timezone.now()).order_by(
             "-created_at"
         )[:10]
+
+
+class CreateQuestionView(LoginRequiredMixin, generic.CreateView):
+    """Creates a question."""
+
+    # CreateView class uses the question_form.html template from the templates/questions
+    # with the following naming convention: model_form.html
+    model = Question
+    form_class = QuestionForm
+    success_url = reverse_lazy("questions:questions")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        messages.success(self.request, "The question was created successfully.")
+        return super().form_valid(form)
