@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <span class="fs-4">Create Question</span>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create question" />
+  </form>
+{% endblock content %}
