@@ -27,7 +27,8 @@
             {{ question.views|default_if_none:0 }}</span>
             <div>
               <span class="ms-2 fs-5 fw-bolder">
-                <a href="{% url 'questions:questions' %}" class="text-decoration-none">{{ question.title|capfirst }}</a>
+                <a href="{% url 'questions:question' pk=question.id %}"
+                   class="text-decoration-none">{{ question.title|capfirst }}</a>
               </span>
             </div>
             <div class="d-flex justify-content-between">
