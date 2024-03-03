@@ -4,14 +4,14 @@
 {% load static %}
 
 {% block content %}
-  <div class="mx-auto">
+  <div>
     <div class="d-flex justify-content-between">
       <span class="fs-4">Top Questions</span>
-      <button type="button" class="btn btn-primary">Ask Question</button>
+      <a class="btn btn-primary" href={% url "questions:question_create" %}>Ask Question</a>
     </div>
     {% if questions_list %}
       {% for question in questions_list %}
-        <div class="border border-1 border-primary m-2">
+        <div class="border border-1 border-primary mt-2 rounded">
           <div>
             <span class="ms-2 text-success fw-bolder">
               <img src="{% static "images/thumbnails/answer-24.png" %}" alt="Answered" />
@@ -32,7 +32,7 @@
             </div>
             <div class="d-flex justify-content-between">
               <div>
-                {% for tag in question.tags.all %}<span class="ms-2 px-1 bg-primary text-white">{{ tag.name }}</span>{% endfor %}
+                {% for tag in question.tags.all %}<span class="ms-2">{{ tag.name }}</span>{% endfor %}
                 {% if not question.tags.all %}<span class="mx-2">not_tagged</span>{% endif %}
               </div>
               <div class="mx-2">
