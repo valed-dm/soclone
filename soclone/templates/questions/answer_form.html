@@ -1,0 +1,6 @@
+<span class="fs-4">Your Answer</span>
+<form method="post">
+  {% csrf_token %}
+  {{ answer_form.as_p }}
+  <input type="submit" value="Post Your Answer" />
+</form>
