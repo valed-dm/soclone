@@ -1,6 +1,7 @@
 """Forms for the questions app."""
 from django import forms
 
+from .models import Answer
 from .models import Question
 from .models import Tag
 
@@ -26,3 +27,13 @@ class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ["title", "problem", "effort", "tags"]
+
+
+class AnswerForm(forms.ModelForm):
+    """Form for creating answers."""
+
+    body = forms.CharField(widget=forms.Textarea(attrs={"class": "form-control"}))
+
+    class Meta:
+        model = Answer
+        fields = ["body"]
