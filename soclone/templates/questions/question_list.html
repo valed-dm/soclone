@@ -5,25 +5,27 @@
 
 {% block content %}
   <div>
-    <div class="d-flex justify-content-between">
-      <span class="fs-4">Top Questions</span>
-      <a class="btn btn-primary" href={% url "questions:question_create" %}>Ask Question</a>
-    </div>
+    <header>
+      <div class="d-flex justify-content-between">
+        <span class="fs-4">Top Questions</span>
+        <a class="btn btn-primary" href={% url "questions:question_create" %}>Ask Question</a>
+      </div>
+    </header>
     {% if questions_list %}
       {% for question in questions_list %}
         <div class="border border-1 border-primary mt-2 rounded">
           <div>
             <span class="ms-2 text-success fw-bolder">
-              <img src="{% static "images/thumbnails/answer-24.png" %}" alt="Answered" />
+              <img src="{% static "images/thumbnails/icons8-answer-30.png" %}" alt="Answered" />
             {{ question.answers|default_if_none:0 }}</span>
             <span class="ms-2 text-warning fw-bolder">
-              <img src="{% static "images/thumbnails/like-24.png" %}" alt="Like" />
+              <img src="{% static "images/thumbnails/icons8-like-32.png" %}" alt="Like" />
             {{ question.likes|default_if_none:0 }}</span>
             <span class="ms-2 text-danger fw-bolder">
-              <img src="{% static "images/thumbnails/dislike-24.png" %}" alt="Dislike" />
+              <img src="{% static "images/thumbnails/icons8-dislike-32.png" %}" alt="Dislike" />
             {{ question.dislikes|default_if_none:0 }}</span>
             <span class="ms-2 text-primary fw-bolder">
-              <img src="{% static "images/thumbnails/eye-24.png" %}" alt="Viewed" />
+              <img src="{% static "images/thumbnails/icons8-eye-30.png" %}" alt="Viewed" />
             {{ question.views|default_if_none:0 }}</span>
             <div>
               <span class="ms-2 fs-5 fw-bolder">
@@ -36,11 +38,12 @@
                 {% for tag in question.tags.all %}<span class="ms-2">{{ tag.name }}</span>{% endfor %}
                 {% if not question.tags.all %}<span class="mx-2">not_tagged</span>{% endif %}
               </div>
-              <div class="mx-2">
-                {{ question.user.email }}
-                &nbspasked&nbsp
-                <img src="{% static "images/thumbnails/time-24.png" %}" alt="Asked" />
-                {{ question.asked | timedelta_readable }}
+              <div class="me-2">
+                <span>{{ question.user.email }}</span>
+                <span>
+                  <img src="{% static "images/thumbnails/icons8-time-32.png" %}" alt="Posed" />
+                </span>
+                <span>{{ question.posed | timedelta_readable }}</span>
               </div>
             </div>
           </div>
