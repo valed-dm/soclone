@@ -24,7 +24,7 @@ class TimestampMixin(models.Model):
 class UserMixin(models.Model):
     """User mixin."""
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -127,17 +127,42 @@ class AnswerVote(AppraisalMixin, TimestampMixin):
         return f"vote for answer to {self.answer.question.title[:20]!r}.."
 
 
-class QuestionView(UserMixin, TimestampMixin):
-    """Question view model."""
+class QuestionsViewsIP(UserMixin, TimestampMixin):
+    """Questions IP collection."""
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    ip_address = models.CharField(max_length=50)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["question", "user", "ip_address"],
+                name="unique_question_user_ip_view",
+            )
+        ]
+
+    def __str__(self):
+        return self.ip_address
+
+
+class QuestionUniqueViewsStatistics(UserMixin):
+    """Question views statistic model."""
+
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    ip = models.ForeignKey(QuestionsViewsIP, null=True, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["question", "user"], name="unique_question_user_view"
-            )
+            ),
+            models.UniqueConstraint(
+                fields=["question", "ip"], name="unique_question_ip_view"
+            ),
         ]
 
     def __str__(self):
-        return f"question {self.question.title[:20]!r} user {self.user.email} view"
+        return (
+            f"question {self.question.title[:20]!r} "
+            f"user {self.user.email if self.user else self.ip.ip_address} view"
+        )
