@@ -20,7 +20,7 @@ from soclone.questions.forms import AnswerForm
 from soclone.questions.forms import QuestionForm
 from soclone.questions.models import Answer
 from soclone.questions.models import Question
-from soclone.questions.models import QuestionView
+from soclone.questions.models import QuestionUniqueViewsStatistics
 from soclone.questions.models import QuestionVote
 from soclone.questions.models import Tag
 
@@ -52,7 +52,7 @@ class QuestionsView(generic.ListView):
                     .values("qty")
                 ),
                 views=Subquery(
-                    QuestionView.objects.values("question")
+                    QuestionUniqueViewsStatistics.objects.values("question")
                     .filter(question=OuterRef("id"))
                     .annotate(qty=Count("question"))
                     .values("qty")
@@ -78,7 +78,7 @@ class QuestionDetailView(generic.DetailView):
         q = context["question"]
         cat = q.created_at
         uat = q.updated_at
-        views: int = QuestionView.objects.filter(question=q.id).count()
+        views: int = QuestionUniqueViewsStatistics.objects.filter(question=q.id).count()
         answers = Answer.objects.filter(question=q.id).select_related("user").all()
         context["posed"] = timezone.now() - cat
         context["modified"] = (
