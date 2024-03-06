@@ -146,6 +146,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # custom middleware
+    "soclone.questions.middleware.QuestionViewMiddleware",
 ]
 
 # STATIC
