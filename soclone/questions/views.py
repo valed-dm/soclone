@@ -3,10 +3,12 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Case
 from django.db.models import Count
 from django.db.models import F
 from django.db.models import OuterRef
 from django.db.models import Subquery
+from django.db.models import When
 from django.db.models.query import QuerySet
 from django.http import HttpResponseForbidden
 from django.urls import reverse
@@ -79,14 +81,24 @@ class QuestionDetailView(generic.DetailView):
         cat = q.created_at
         uat = q.updated_at
         views: int = QuestionUniqueViewsStatistics.objects.filter(question=q.id).count()
-        answers = Answer.objects.filter(question=q.id).select_related("user").all()
+        answers: QuerySet = (
+            Answer.objects.filter(question=q.id).select_related("user").all()
+        )
+        rating: dict = QuestionVote.objects.aggregate(
+            difference=(
+                Count(Case(When(is_useful=True, then=1)))
+                - Count(Case(When(is_useful=False, then=1)))
+            )
+        )
+
         context["posed"] = timezone.now() - cat
         context["modified"] = (
             (timezone.now() - uat) if (uat - cat) > timedelta(seconds=1) else None
         )
         context["views"] = views
+        context["rating"] = rating["difference"]
+        context["answers_qty"] = answers.count() if answers else 0
         context["answers"] = answers
-        context["answers_qty"] = len(answers) if answers else 0
         context["answer_form"] = AnswerForm
         return context
 
