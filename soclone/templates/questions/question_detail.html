@@ -24,9 +24,13 @@
     </header>
     <div class="d-flex">
       <div class="d-flex flex-column align-items-center mx-2 mt-3">
-        <img src="{% static "images/thumbnails/icons8-slide-up-50.png" %}" alt="Slide up" />
+        <a class="btn" href="{% url "questions:q_rating" pk=qid useful=1 %}">
+          <img src="{% static "images/thumbnails/icons8-slide-up-50.png" %}" alt="Slide up" />
+        </a>
         <span class="fs-1 fw-bold">{{ rating }}</span>
-        <img src="{% static "images/thumbnails/icons8-slide-down-50.png" %}" alt="Slide down" />
+        <a class="btn" href="{% url "questions:q_rating" pk=qid useful=0 %}">
+          <img src="{% static "images/thumbnails/icons8-slide-down-50.png" %}" alt="Slide down" />
+        </a>
       </div>
       <div>
         <div>
