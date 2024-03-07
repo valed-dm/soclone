@@ -22,25 +22,36 @@
         {{ views }}</span>
       </div>
     </header>
-    <p>{{ question.problem }}</p>
-    <p>{{ question.effort }}</p>
-    {% for tag in question.tags.all %}{{ tag.name }}{% endfor %}
-  </article>
-  <article class="answer">
-    <div class="d-flex justify-content-between">
-      {% if answers_qty > 0 %}
-        <span class="fs-4">{{ answers_qty }} Answer{{ answers_qty | pluralize:'s' }}</span>
-      {% else %}
-        <span class="fs-4">Not Answered Yet</span>
-      {% endif %}
-    </div>
-    {% for answer in answers %}
-      <div class="border border-primary mt-2">
-        <p>{{ answer.body }}</p>
-        <span>{{ answer.created_at }}</span>
-        <span>{{ answer.user }}</span>
+    <div class="d-flex">
+      <div class="d-flex flex-column align-items-center mx-2 mt-3">
+        <img src="{% static "images/thumbnails/icons8-slide-up-50.png" %}" alt="Slide up" />
+        <span class="fs-1 fw-bold">{{ rating }}</span>
+        <img src="{% static "images/thumbnails/icons8-slide-down-50.png" %}" alt="Slide down" />
       </div>
-    {% endfor %}
-    {% include "questions/answer_form.html" %}
+      <div>
+        <div>
+          <p>{{ question.problem }}</p>
+          <p>{{ question.effort }}</p>
+          {% for tag in question.tags.all %}{{ tag.name }}{% endfor %}
+        </div>
+        <article class="answer">
+          <div class="d-flex justify-content-between">
+            {% if answers_qty > 0 %}
+              <span class="fs-4">{{ answers_qty }} Answer{{ answers_qty | pluralize:'s' }}</span>
+            {% else %}
+              <span class="fs-4">Not Answered Yet</span>
+            {% endif %}
+          </div>
+          {% for answer in answers %}
+            <div class="border border-primary mt-2">
+              <p>{{ answer.body }}</p>
+              <span>{{ answer.created_at }}</span>
+              <span>{{ answer.user }}</span>
+            </div>
+          {% endfor %}
+          {% include "questions/answer_form.html" %}
+        </article>
+      </div>
+    </div>
   </article>
 {% endblock content %}
