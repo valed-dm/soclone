@@ -10,7 +10,6 @@ from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models import When
 from django.db.models.query import QuerySet
-from django.http import HttpResponseForbidden
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -103,7 +102,7 @@ class QuestionDetailView(generic.DetailView):
         return context
 
 
-class QuestionAnswerFormView(SingleObjectMixin, generic.FormView):
+class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.FormView):
     """Renders answer form for question."""
 
     template_name = "questions/question_detail.html"
@@ -111,9 +110,7 @@ class QuestionAnswerFormView(SingleObjectMixin, generic.FormView):
     model = Answer
 
     def post(self, request, *args, **kwargs):
-        """Enable post request for question by authorized users."""
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden()
+        """Enable post request for question."""
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
