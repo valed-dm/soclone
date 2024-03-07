@@ -103,7 +103,7 @@ class QuestionVote(AppraisalMixin, TimestampMixin):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["question", "user"], name="unique_question_vote"
+                fields=["question", "user", "is_useful"], name="unique_question_vote"
             )
         ]
 
@@ -119,7 +119,7 @@ class AnswerVote(AppraisalMixin, TimestampMixin):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["answer", "user"], name="unique_answer_vote"
+                fields=["answer", "user", "is_useful"], name="unique_answer_vote"
             )
         ]
 
