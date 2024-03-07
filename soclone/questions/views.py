@@ -2,6 +2,7 @@
 from datetime import timedelta
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Case
 from django.db.models import Count
@@ -10,6 +11,7 @@ from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models import When
 from django.db.models.query import QuerySet
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -90,6 +92,7 @@ class QuestionDetailView(generic.DetailView):
             )
         )
 
+        context["qid"] = q.id
         context["posed"] = timezone.now() - cat
         context["modified"] = (
             (timezone.now() - uat) if (uat - cat) > timedelta(seconds=1) else None
@@ -166,3 +169,16 @@ class TagsView(generic.ListView):
         return Tag.objects.filter(created_at__lte=timezone.now()).order_by(
             "-created_at"
         )[:10]
+
+
+@login_required
+def question_rating(request, pk, useful):
+    question = Question.objects.get(id=pk)
+    rating = QuestionVote.objects.filter(question=question, user=request.user).update(
+        is_useful=useful, updated_at=timezone.now()
+    )
+    if not rating:
+        QuestionVote.objects.create(
+            question=question, user=request.user, is_useful=bool(useful)
+        )
+    return redirect("questions:question", pk=pk)
