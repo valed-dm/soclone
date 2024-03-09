@@ -12,8 +12,8 @@ urlpatterns = [
     path("tags/", views.TagsView.as_view(), name="tags"),
     path(
         "a_rating/<int:q_pk>/<int:a_pk>/<int:useful>",
-        views.answer_rating,
+        views.rating,
         name="a_rating",
     ),
-    path("q_rating/<int:q_pk>/<int:useful>", views.question_rating, name="q_rating"),
+    path("q_rating/<int:q_pk>/<int:useful>", views.rating, name="q_rating"),
 ]
