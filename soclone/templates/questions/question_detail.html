@@ -24,11 +24,11 @@
     </header>
     <div class="d-flex">
       <div class="d-flex flex-column align-items-center mx-2 mt-3">
-        <a class="btn" href="{% url "questions:q_rating" pk=qid useful=1 %}">
+        <a class="btn" href="{% url "questions:q_rating" q_pk=qid useful=1 %}">
           <img src="{% static "images/thumbnails/icons8-slide-up-50.png" %}" alt="Slide up" />
         </a>
-        <span class="fs-1 fw-bold">{{ rating }}</span>
-        <a class="btn" href="{% url "questions:q_rating" pk=qid useful=0 %}">
+        <span class="fs-1 fw-bold">{{ q_rating|default_if_none:0 }}</span>
+        <a class="btn" href="{% url "questions:q_rating" q_pk=qid useful=0 %}">
           <img src="{% static "images/thumbnails/icons8-slide-down-50.png" %}" alt="Slide down" />
         </a>
       </div>
@@ -36,21 +36,37 @@
         <div>
           <p>{{ question.problem }}</p>
           <p>{{ question.effort }}</p>
-          {% for tag in question.tags.all %}{{ tag.name }}{% endfor %}
+          <div>
+            {% for tag in question.tags.all %}<span class="ms-2">{{ tag.name }}</span>{% endfor %}
+            {% if not question.tags.all %}<span class="mx-2">not_tagged</span>{% endif %}
+          </div>
         </div>
         <article class="answer">
           <div class="d-flex justify-content-between">
-            {% if answers_qty > 0 %}
+            {% if answers_qty %}
               <span class="fs-4">{{ answers_qty }} Answer{{ answers_qty | pluralize:'s' }}</span>
             {% else %}
               <span class="fs-4">Not Answered Yet</span>
             {% endif %}
           </div>
           {% for answer in answers %}
-            <div class="border border-primary mt-2">
-              <p>{{ answer.body }}</p>
-              <span>{{ answer.created_at }}</span>
-              <span>{{ answer.user }}</span>
+            <div class="d-flex">
+              <div class="d-flex flex-column align-items-center mx-2 mt-3">
+                <a class="btn"
+                   href="{% url "questions:a_rating" q_pk=qid a_pk=answer.id useful=1 %}">
+                  <img src="{% static "images/thumbnails/icons8-slide-up-50.png" %}" alt="Slide up" />
+                </a>
+                <span class="fs-1 fw-bold">{{ answer.rating|default_if_none:0 }}</span>
+                <a class="btn"
+                   href="{% url "questions:a_rating" q_pk=qid a_pk=answer.id useful=0 %}">
+                  <img src="{% static "images/thumbnails/icons8-slide-down-50.png" %}" alt="Slide down" />
+                </a>
+              </div>
+              <div class="border border-primary mt-2">
+                <p>{{ answer.body }}</p>
+                <span>{{ answer.created_at }}</span>
+                <span>{{ answer.user }}</span>
+              </div>
             </div>
           {% endfor %}
           {% include "questions/answer_form.html" %}
