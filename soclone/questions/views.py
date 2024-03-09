@@ -1,5 +1,7 @@
 """Views for the questions app."""
 from datetime import timedelta
+from typing import TYPE_CHECKING
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -22,10 +24,14 @@ from django.views.generic.detail import SingleObjectMixin
 from soclone.questions.forms import AnswerForm
 from soclone.questions.forms import QuestionForm
 from soclone.questions.models import Answer
+from soclone.questions.models import AnswerVote
 from soclone.questions.models import Question
 from soclone.questions.models import QuestionUniqueViewsStatistics
 from soclone.questions.models import QuestionVote
 from soclone.questions.models import Tag
+
+if TYPE_CHECKING:
+    from django.db.models.functions import datetime
 
 
 class QuestionsView(generic.ListView):
@@ -75,18 +81,32 @@ class QuestionDetailView(generic.DetailView):
     model = Question
     context_object_name = "question"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         """Enrich context data with statistics and answer form."""
-        context = super().get_context_data(**kwargs)
-        q = context["question"]
-        cat = q.created_at
-        uat = q.updated_at
+        context: dict[str, Any] = super().get_context_data(**kwargs)
+        q: Question = context["question"]
+        cat: datetime = q.created_at
+        uat: datetime = q.updated_at
         views: int = QuestionUniqueViewsStatistics.objects.filter(question=q.id).count()
-        answers: QuerySet = (
-            Answer.objects.filter(question=q.id).select_related("user").all()
+        answers: QuerySet[Answer] = (
+            Answer.objects.filter(question=q.id)
+            .select_related("user")
+            .annotate(
+                rating=Subquery(
+                    AnswerVote.objects.values("is_useful")
+                    .filter(answer=OuterRef("id"))
+                    .annotate(
+                        diff=(
+                            Count(Case(When(is_useful=True, then=1)))
+                            - Count(Case(When(is_useful=False, then=1)))
+                        )
+                    )
+                    .values("diff")
+                )
+            )
         )
-        rating: dict = QuestionVote.objects.aggregate(
-            difference=(
+        q_rating: dict[str, int] = QuestionVote.objects.filter(question=q.id).aggregate(
+            rating=(
                 Count(Case(When(is_useful=True, then=1)))
                 - Count(Case(When(is_useful=False, then=1)))
             )
@@ -98,10 +118,11 @@ class QuestionDetailView(generic.DetailView):
             (timezone.now() - uat) if (uat - cat) > timedelta(seconds=1) else None
         )
         context["views"] = views
-        context["rating"] = rating["difference"]
-        context["answers_qty"] = answers.count() if answers else 0
+        context["q_rating"] = q_rating["rating"]
+        context["answers_qty"] = answers.count()
         context["answers"] = answers
         context["answer_form"] = AnswerForm
+
         return context
 
 
@@ -113,10 +134,11 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
     model = Answer
 
     def post(self, request, *args, **kwargs):
-        """Enable post request for question."""
+        """Enables post request for question."""
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        """Enables form validation and saves answer form data"""
         answer = Answer(
             user=self.request.user,
             question=Question.objects.get(id=self.kwargs.get("pk")),
@@ -127,17 +149,24 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
         return super().form_valid(form)
 
     def get_success_url(self):
+        """Returns success url"""
         return reverse("questions:question", kwargs={"pk": self.kwargs.get("pk")})
 
 
 class QuestionFullView(View):
-    """Renders full question view"""
+    """
+    Combines QuestionDetailView and QuestionAnswerFormView in a single view.
+    """
 
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        """Defines GET request view"""
         view = QuestionDetailView.as_view()
         return view(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
+        """Defines POST request view"""
         view = QuestionAnswerFormView.as_view()
         return view(request, *args, **kwargs)
 
@@ -152,6 +181,7 @@ class QuestionCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("questions:questions")
 
     def form_valid(self, form):
+        """Enables form validation, bounds user to the question created"""
         form.instance.user = self.request.user
         messages.success(self.request, "The question was created successfully.")
         return super().form_valid(form)
@@ -172,13 +202,26 @@ class TagsView(generic.ListView):
 
 
 @login_required
-def question_rating(request, pk, useful):
-    question = Question.objects.get(id=pk)
-    rating = QuestionVote.objects.filter(question=question, user=request.user).update(
+def answer_rating(request, q_pk, a_pk, useful):
+    answer = Answer.objects.get(id=a_pk)
+    a_rating = AnswerVote.objects.filter(answer=answer, user=request.user).update(
         is_useful=useful, updated_at=timezone.now()
     )
-    if not rating:
+    if not a_rating:
+        AnswerVote.objects.create(
+            answer=answer, user=request.user, is_useful=bool(useful)
+        )
+    return redirect("questions:question", pk=q_pk)
+
+
+@login_required
+def question_rating(request, q_pk, useful):
+    question = Question.objects.get(id=q_pk)
+    q_rating = QuestionVote.objects.filter(question=question, user=request.user).update(
+        is_useful=useful, updated_at=timezone.now()
+    )
+    if not q_rating:
         QuestionVote.objects.create(
             question=question, user=request.user, is_useful=bool(useful)
         )
-    return redirect("questions:question", pk=pk)
+    return redirect("questions:question", pk=q_pk)
