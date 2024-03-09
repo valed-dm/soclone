@@ -202,26 +202,27 @@ class TagsView(generic.ListView):
 
 
 @login_required
-def answer_rating(request, q_pk, a_pk, useful):
-    answer = Answer.objects.get(id=a_pk)
-    a_rating = AnswerVote.objects.filter(answer=answer, user=request.user).update(
-        is_useful=useful, updated_at=timezone.now()
-    )
-    if not a_rating:
-        AnswerVote.objects.create(
-            answer=answer, user=request.user, is_useful=bool(useful)
-        )
-    return redirect("questions:question", pk=q_pk)
+def rating(request, **kwargs):
+    """Provides positive or negative voting for a question or an answer"""
+    q_pk: int = kwargs.get("q_pk")
+    a_pk: int | None = kwargs.get("a_pk", None)
+    pk: tuple[int | None, int] = a_pk, q_pk
+    useful: int = kwargs.get("useful")
+    canister: dict = {"user": request.user}
+    option: int = 0 if a_pk else 1
 
+    obj_model: tuple = Answer, Question
+    votes_model: tuple = AnswerVote, QuestionVote
+    vote_attr: tuple[str, str] = "answer", "question"
 
-@login_required
-def question_rating(request, q_pk, useful):
-    question = Question.objects.get(id=q_pk)
-    q_rating = QuestionVote.objects.filter(question=question, user=request.user).update(
-        is_useful=useful, updated_at=timezone.now()
+    obj = obj_model[option].objects.get(id=pk[option])
+    canister[vote_attr[option]] = obj
+    obj_rating = (
+        votes_model[option]
+        .objects.filter(**canister)
+        .update(is_useful=useful, updated_at=timezone.now())
     )
-    if not q_rating:
-        QuestionVote.objects.create(
-            question=question, user=request.user, is_useful=bool(useful)
-        )
+    if not obj_rating:
+        votes_model[option].objects.create(**canister, is_useful=bool(useful))
+
     return redirect("questions:question", pk=q_pk)
