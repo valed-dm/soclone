@@ -52,7 +52,7 @@ class Question(UserMixin, TimestampMixin):
     """Question model."""
 
     title = models.CharField(max_length=200, unique=True)
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True, default=None)
     problem = models.TextField(
         help_text=(
             "What are the details of your problem?\n"

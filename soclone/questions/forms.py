@@ -22,6 +22,7 @@ class QuestionForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all().order_by("name"),
         widget=forms.SelectMultiple(attrs={"class": "form-control"}),
+        required=False,
     )
 
     class Meta:
