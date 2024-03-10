@@ -37,8 +37,13 @@
           <p>{{ question.problem }}</p>
           <p>{{ question.effort }}</p>
           <div>
-            {% for tag in question.tags.all %}<span class="ms-2">{{ tag.name }}</span>{% endfor %}
-            {% if not question.tags.all %}<span class="mx-2">not_tagged</span>{% endif %}
+            {% for tag in question.tags.all %}
+              {% if tag %}
+                <span class="ms-2">{{ tag.name }}</span>
+              {% else %}
+                <span class="mx-2">not_tagged</span>
+              {% endif %}
+            {% endfor %}
           </div>
         </div>
         <article class="answer">
