@@ -45,14 +45,13 @@ class QuestionViewMiddleware:
                 ip_address=ip_address,
             )
 
-            ip = QuestionsViewsIP.objects.filter(ip_address=ip_address).first()
-
             # Collects question-user or question-ip pairs
             if user:
                 QuestionUniqueViewsStatistics.objects.update_or_create(
                     question=question, user=user
                 )
             else:
+                ip = QuestionsViewsIP.objects.filter(ip_address=ip_address).first()
                 QuestionUniqueViewsStatistics.objects.update_or_create(
                     question=question, ip=ip
                 )
