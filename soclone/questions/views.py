@@ -204,8 +204,9 @@ class TagsView(generic.ListView):
 @login_required
 def rating(request, **kwargs):
     """
+    Rating engine.
     Provides positive or negative voting for a question or an answer.
-    Eliminates code duplication when views statistics are being recorded.
+    Eliminates code duplication when rating statistics are being recorded.
     Redirects to question view.
     """
     q_pk: int = kwargs.get("q_pk")
