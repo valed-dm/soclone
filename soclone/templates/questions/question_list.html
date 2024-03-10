@@ -35,8 +35,11 @@
             </div>
             <div class="d-flex justify-content-between">
               <div>
-                {% for tag in question.tags.all %}<span class="ms-2">{{ tag.name }}</span>{% endfor %}
-                {% if not question.tags.all %}<span class="mx-2">not_tagged</span>{% endif %}
+                {% for tag in question.tags.all %}
+                  <span class="ms-2">{{ tag.name }}</span>
+                {% empty %}
+                  <span class="mx-2">not_tagged</span>
+                {% endfor %}
               </div>
               <div class="me-2">
                 <span>{{ question.user.email }}</span>
