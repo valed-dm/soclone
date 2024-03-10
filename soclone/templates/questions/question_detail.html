@@ -36,11 +36,7 @@
         <div>
           <p>{{ question.problem }}</p>
           <p>{{ question.effort }}</p>
-          {% for tag in question.tags.all %}
-            <span class="ms-2">{{ tag.name }}</span>
-          {% empty %}
-            <span class="mx-2">not_tagged</span>
-          {% endfor %}
+          {% include "questions/tags_line.html" %}
         </div>
       </div>
       <article class="answer">
