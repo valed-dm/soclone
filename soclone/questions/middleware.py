@@ -24,8 +24,8 @@ class QuestionViewMiddleware:
 
     def __call__(self, request):
         """
-        Counts question statistic using authenticated user.
-        When user is anonymous ip address serves as base parameter.
+        Counts question statistic based on user authenticated.
+        When user is anonymous ip address serves as user identity.
         """
         response = self.get_response(request)
         path: str = request.path
