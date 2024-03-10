@@ -1,9 +1,14 @@
 """Questions middleware."""
 import re
+from typing import TYPE_CHECKING
+from typing import Any
 
 from .models import Question
 from .models import QuestionsViewsIP
 from .models import QuestionUniqueViewsStatistics
+
+if TYPE_CHECKING:
+    from django.contrib.auth.models import User
 
 
 def ipaddress(request) -> str:
@@ -27,7 +32,7 @@ class QuestionViewMiddleware:
         Counts question statistic based on user authenticated.
         When user is anonymous ip address serves as user identity.
         """
-        response = self.get_response(request)
+        response: Any = self.get_response(request)
 
         path: str = request.path
         rx = re.compile(r"^/questions/(?P<pk>\d+)/$")
@@ -35,11 +40,11 @@ class QuestionViewMiddleware:
         if rx.match(path):
             # AnonymousUser object has id=None and pk=None
             # AnonymousUser is replaced by None
-            user = request.user if request.user.is_authenticated else None
+            user: User | None = request.user if request.user.is_authenticated else None
             pk = int(re.search("\\d+", path)[0])
             ip_address: str = ipaddress(request)
 
-            question = Question.objects.get(id=pk)
+            question: Question = Question.objects.get(id=pk)
             # Keeps unique user-question-ip-date data for possible future analysis
             QuestionsViewsIP.objects.update_or_create(
                 # AnonymousUser object would be erroneous here
@@ -54,7 +59,9 @@ class QuestionViewMiddleware:
                     question=question, user=user
                 )
             else:
-                ip = QuestionsViewsIP.objects.filter(ip_address=ip_address).first()
+                ip: QuestionsViewsIP = QuestionsViewsIP.objects.filter(
+                    ip_address=ip_address
+                ).first()
                 QuestionUniqueViewsStatistics.objects.update_or_create(
                     question=question, ip=ip
                 )
