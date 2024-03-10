@@ -29,7 +29,8 @@ class QuestionViewMiddleware:
 
     def __call__(self, request):
         """
-        Counts question statistic based on user authenticated.
+        Views engine.
+        Counts question views statistic based on user authenticated.
         When user is anonymous ip address serves as user identity.
         """
         response: Any = self.get_response(request)
