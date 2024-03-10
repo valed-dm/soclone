@@ -203,7 +203,11 @@ class TagsView(generic.ListView):
 
 @login_required
 def rating(request, **kwargs):
-    """Provides positive or negative voting for a question or an answer"""
+    """
+    Provides positive or negative voting for a question or an answer.
+    Eliminates code duplication when views statistics are being recorded.
+    Redirects to question view.
+    """
     q_pk: int = kwargs.get("q_pk")
     a_pk: int | None = kwargs.get("a_pk", None)
     pk: tuple[int | None, int] = a_pk, q_pk
@@ -215,9 +219,10 @@ def rating(request, **kwargs):
     votes_model: tuple = AnswerVote, QuestionVote
     vote_attr: tuple[str, str] = "answer", "question"
 
-    obj = obj_model[option].objects.get(id=pk[option])
+    obj: Answer | Question = obj_model[option].objects.get(id=pk[option])
     canister[vote_attr[option]] = obj
-    obj_rating = (
+
+    obj_rating: AnswerVote | QuestionVote = (
         votes_model[option]
         .objects.filter(**canister)
         .update(is_useful=useful, updated_at=timezone.now())
