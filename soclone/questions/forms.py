@@ -9,6 +9,10 @@ from .models import Tag
 class QuestionForm(forms.ModelForm):
     """Form for creating Question"""
 
+    class Meta:
+        model = Question
+        fields = ["title", "problem", "effort", "tags"]
+
     title = forms.CharField(
         widget=forms.TextInput(
             attrs={"placeholder": "Enter question title", "class": "form-control"}
@@ -25,16 +29,12 @@ class QuestionForm(forms.ModelForm):
         required=False,
     )
 
-    class Meta:
-        model = Question
-        fields = ["title", "problem", "effort", "tags"]
-
 
 class AnswerForm(forms.ModelForm):
     """Form for creating answers."""
 
-    body = forms.CharField(widget=forms.Textarea(attrs={"class": "form-control"}))
-
     class Meta:
         model = Answer
         fields = ["body"]
+
+    body = forms.CharField(widget=forms.Textarea(attrs={"class": "form-control"}))
