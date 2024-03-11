@@ -52,26 +52,9 @@ class Question(UserMixin, TimestampMixin):
     """Question model."""
 
     title = models.CharField(max_length=200, unique=True)
+    problem = models.TextField(unique=True, validators=validators)
+    effort = models.TextField(unique=True, validators=validators)
     tags = models.ManyToManyField(Tag, blank=True, default=None)
-    problem = models.TextField(
-        help_text=(
-            "What are the details of your problem?\n"
-            "Introduce the problem and expand on what you put in the title."
-            "Minimum 20 characters."
-        ),
-        unique=True,
-        validators=validators,
-    )
-    effort = models.TextField(
-        help_text=(
-            "What did you try and what were you expecting?\n"
-            "Describe what you tried, what you expected to happen, "
-            "and what actually resulted. "
-            "Minimum 20 characters."
-        ),
-        unique=True,
-        validators=validators,
-    )
 
     def __str__(self):
         return f"{self.title[:20]!r}.."
@@ -81,15 +64,7 @@ class Answer(UserMixin, TimestampMixin):
     """Answer model."""
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    body = models.TextField(
-        help_text=(
-            "Give a brief description of underlying conditions."
-            "Propose some clues, methods or attach code samples."
-            "Minimum 20 characters."
-        ),
-        unique=True,
-        validators=validators,
-    )
+    body = models.TextField(unique=True, validators=validators)
 
     def __str__(self):
         return f"reply to {self.question.title[:20]!r}.."
