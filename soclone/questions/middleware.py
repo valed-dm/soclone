@@ -60,6 +60,7 @@ class QuestionViewMiddleware:
                     question=question, user=user
                 )
             else:
+                # ip has been already added into QuestionsViewsIP earlier
                 ip: QuestionsViewsIP = QuestionsViewsIP.objects.filter(
                     ip_address=ip_address
                 ).first()
