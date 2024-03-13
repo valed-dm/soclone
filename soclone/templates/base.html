@@ -23,8 +23,23 @@
             crossorigin="anonymous"
             referrerpolicy="no-referrer" />
       <!-- Your stuff: Third-party CSS libraries go here -->
+      <!--Tinymce Text-Editor (Must be in Head Tag) -->
+      <script src="{% static 'js/tinymce/tinymce.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'js/tinymce/custom.js' %}"></script>
       <!-- This file stores project-specific CSS -->
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+      <style>
+        body {
+          padding-bottom: 10em;
+        }
+
+        code {
+          display: block;
+          width: auto;
+          overflow-x: auto;
+          background: lightgray;
+        }
+      </style>
     {% endblock css %}
     <!-- Latest javascript
 ================================================== -->
@@ -95,8 +110,8 @@
       </nav>
     </div>
     <div class="container p-0 m-0">
-      <div class="row p-0 m-0 vh-100 border-end border-secondary">
-        <div class="col-1 p-0 m-0 vh-100 border-end border-secondary">
+      <div class="row p-0 m-0 vh-auto border-end border-secondary">
+        <div class="col-2 p-0 m-0 vh-auto border-end border-secondary">
           <ul class="nav flex-column">
             <li class="nav-item active">
               <a class="nav-link" href="{% url 'home' %}">Home<span class="visually-hidden">(current)</span></a>
@@ -109,7 +124,7 @@
             </li>
           </ul>
         </div>
-        <div class="col">
+        <div class="col-10">
           <div class="container">
             {% if messages %}
               {% for message in messages %}
@@ -142,6 +157,20 @@
       });
     </script>
       {% endcomment %}
+      <script>
+        tinymce.init({
+          selector: 'textarea',
+          language: 'ru',
+          height: 250,
+          theme: 'silver',
+          plugins: 'codesample link code wordcount',
+          toolbar1: 'formatselect|bold italic|link|alignjustify|outdent indent|removeformat',
+          cleanup_on_startup: true,
+          custom_undo_redo_levels: 10,
+          compressor: true,
+          promotion: false,
+        });
+      </script>
     {% endblock inline_javascript %}
   </body>
 </html>
