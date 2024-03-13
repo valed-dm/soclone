@@ -1,5 +1,6 @@
 """Django customized filters for use in templates."""
-from datetime import datetime
+import html
+import re
 from datetime import timedelta
 
 from django import template
@@ -27,5 +28,17 @@ def timedelta_readable(value: timedelta) -> str:
 
 
 @register.filter
-def datetime_readable(value: datetime):
-    """Format a datetime to be human-readable."""
+def contains_html(text):
+    pattern = r"<[^>]+>"
+    return bool(re.search(pattern, text))
+
+
+@register.filter
+def html_parser(data: str) -> str:
+    """Converts html string."""
+
+    if contains_html(data):
+        unicode_str = html.unescape(data)
+        return html.escape(unicode_str)
+
+    return data
