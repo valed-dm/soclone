@@ -84,6 +84,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.github",
     "django_celery_beat",
+    "tinymce",
 ]
 
 LOCAL_APPS = [
@@ -336,3 +337,12 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+# TinyMCE config
+TINYMCE_DEFAULT_CONFIG = {
+    "plugins": "codesample,link,code,wordcount",
+    "toolbar1": "formatselect|bold italic|link|alignjustify|outdent indent|removeformat",
+    "theme": "silver",
+    "cleanup_on_startup": True,
+    "custom_undo_redo_levels": 10,
+}
+TINYMCE_COMPRESSOR = True
