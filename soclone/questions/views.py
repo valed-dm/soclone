@@ -104,6 +104,7 @@ class QuestionDetailView(generic.DetailView):
                     .values("diff")
                 )
             )
+            .order_by("-created_at")
         )
         q_rating: dict[str, int] = QuestionVote.objects.filter(question=q.id).aggregate(
             rating=(
@@ -129,9 +130,8 @@ class QuestionDetailView(generic.DetailView):
 class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.FormView):
     """Renders answer form for question."""
 
-    template_name = "questions/question_detail.html"
-    form_class = AnswerForm
     model = Answer
+    form_class = AnswerForm
 
     def post(self, request, *args, **kwargs):
         """Enables post request for question."""
