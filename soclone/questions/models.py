@@ -1,6 +1,7 @@
 """Questions models."""
 from django.core.validators import MinLengthValidator
 from django.db import models
+from tinymce.models import HTMLField
 
 from soclone.users.models import User
 
@@ -52,8 +53,8 @@ class Question(UserMixin, TimestampMixin):
     """Question model."""
 
     title = models.CharField(max_length=200, unique=True)
-    problem = models.TextField(unique=True, validators=validators)
-    effort = models.TextField(unique=True, validators=validators)
+    problem = HTMLField(unique=True, validators=validators)
+    effort = HTMLField(unique=True, validators=validators)
     tags = models.ManyToManyField(Tag, blank=True, default=None)
 
     def __str__(self):
@@ -64,7 +65,7 @@ class Answer(UserMixin, TimestampMixin):
     """Answer model."""
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    body = models.TextField(unique=True, validators=validators)
+    body = HTMLField(unique=True, validators=validators)
 
     def __str__(self):
         return f"reply to {self.question.title[:20]!r}.."
