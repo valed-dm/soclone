@@ -1,5 +1,6 @@
 """Forms for the questions app."""
 from django import forms
+from tinymce.widgets import TinyMCE
 
 from .models import Answer
 from .models import Question
@@ -20,7 +21,7 @@ class QuestionForm(forms.ModelForm):
     )
 
     problem = forms.CharField(
-        widget=forms.Textarea(
+        widget=TinyMCE(
             attrs={
                 "placeholder": "What are the details of your problem?\n"
                 "Introduce the problem and expand on what you put in the title.\n"
@@ -31,7 +32,7 @@ class QuestionForm(forms.ModelForm):
     )
 
     effort = forms.CharField(
-        widget=forms.Textarea(
+        widget=TinyMCE(
             attrs={
                 "placeholder": "What did you try and what were you expecting?\n"
                 "Describe what you tried, what you expected to happen, "
@@ -57,7 +58,7 @@ class AnswerForm(forms.ModelForm):
         fields = ["body"]
 
     body = forms.CharField(
-        widget=forms.Textarea(
+        widget=TinyMCE(
             attrs={
                 "placeholder": "Give a brief description of underlying conditions.\n"
                 "Propose some clues, methods or attach code samples.\n"
