@@ -169,6 +169,18 @@
           custom_undo_redo_levels: 10,
           compressor: true,
           promotion: false,
+          setup: function(editor) {
+            let limitValue = 20
+            editor.on("submit", function(event) {
+              let numChars = tinymce.activeEditor.plugins.wordcount.body.getCharacterCount();
+              if (numChars < limitValue) {
+                let remainderChars = limitValue - numChars
+                alert("Minimum " + limitValue + " characters allowed. Enter " + remainderChars + " more");
+                event.preventDefault();
+                return false;
+              }
+            })
+          }
         });
       </script>
     {% endblock inline_javascript %}
