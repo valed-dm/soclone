@@ -138,7 +138,10 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        """Enables form validation and saves answer form data"""
+        """
+        Enables custom AnswerForm validation.
+        Saves Answer to db manually as it's not generic.CreateView.
+        """
         answer = Answer(
             user=self.request.user,
             question=Question.objects.get(id=self.kwargs.get("pk")),
@@ -149,7 +152,7 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
         return super().form_valid(form)
 
     def get_success_url(self):
-        """Returns success url"""
+        """Returns successful view url"""
         return reverse("questions:question", kwargs={"pk": self.kwargs.get("pk")})
 
 
@@ -181,7 +184,10 @@ class QuestionCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("questions:questions")
 
     def form_valid(self, form):
-        """Enables form validation, bounds user to the question created"""
+        """
+        Enables custom QuestionForm validation.
+        Bounds user instance to the question created.
+        """
         form.instance.user = self.request.user
         messages.success(self.request, "The question was created successfully.")
         return super().form_valid(form)
