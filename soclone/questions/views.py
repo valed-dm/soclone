@@ -13,6 +13,8 @@ from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models import When
 from django.db.models.query import QuerySet
+from django.http import HttpResponseRedirect
+from django.http import QueryDict
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
@@ -122,7 +124,17 @@ class QuestionDetailView(generic.DetailView):
         context["q_rating"] = q_rating["rating"]
         context["answers_qty"] = answers.count()
         context["answers"] = answers
-        context["answer_form"] = AnswerForm
+        context["answer_form"] = AnswerForm()
+
+        # to show AnswerForm errors in a Django style
+        answer_form_invalid = self.request.session.get("answer_form_invalid")
+        answer_form_body = self.request.session.get("answer_form_body")
+        if answer_form_invalid:
+            post = QueryDict(f"body={answer_form_body}")
+            context["answer_form"] = AnswerForm(post)
+            # AnswerForm errors values are dropped
+            self.request.session["answer_form_invalid"] = False
+            self.request.session["answer_form_body"] = None
 
         return context
 
@@ -136,6 +148,12 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
     def post(self, request, *args, **kwargs):
         """Enables post request for question."""
         return super().post(request, *args, **kwargs)
+
+    def form_invalid(self, form, **kwargs):
+        body_text = form["body"].value()
+        self.request.session["answer_form_invalid"] = True
+        self.request.session["answer_form_body"] = body_text
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_valid(self, form):
         """
