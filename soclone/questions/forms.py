@@ -28,7 +28,9 @@ class QuestionForm(forms.ModelForm):
                 "Minimum 20 characters.",
                 "class": "form-control",
             }
-        )
+        ),
+        required=True,
+        min_length=20,
     )
 
     effort = forms.CharField(
@@ -40,7 +42,9 @@ class QuestionForm(forms.ModelForm):
                 "Minimum 20 characters.",
                 "class": "form-control",
             }
-        )
+        ),
+        required=True,
+        min_length=20,
     )
 
     tags = forms.ModelMultipleChoiceField(
@@ -65,5 +69,7 @@ class AnswerForm(forms.ModelForm):
                 "Minimum 20 characters.",
                 "class": "form-control",
             }
-        )
+        ),
+        required=True,
+        min_length=20,
     )
