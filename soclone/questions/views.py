@@ -6,6 +6,7 @@ from typing import Any
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 from django.db.models import Case
 from django.db.models import Count
 from django.db.models import F
@@ -31,6 +32,8 @@ from soclone.questions.models import Question
 from soclone.questions.models import QuestionUniqueViewsStatistics
 from soclone.questions.models import QuestionVote
 from soclone.questions.models import Tag
+from soclone.questions.utils.xss_guard import xss_guard
+from soclone.questions.utils.xss_guard import xss_multiple_guard
 
 if TYPE_CHECKING:
     from django.db.models.functions import datetime
@@ -128,10 +131,12 @@ class QuestionDetailView(generic.DetailView):
 
         # to show AnswerForm errors in a Django style
         answer_form_invalid = self.request.session.get("answer_form_invalid")
-        answer_form_body = self.request.session.get("answer_form_body")
         if answer_form_invalid:
-            post = QueryDict(f"body={answer_form_body}")
-            context["answer_form"] = AnswerForm(post)
+            answer_form_body = self.request.session.get("answer_form_body")
+            xss_safe, data = xss_guard(answer_form_body)
+            if not xss_safe:
+                messages.error(self.request, message="Answer malicious code dropped")
+            context["answer_form"] = AnswerForm(QueryDict(f"body={data}"))
             # AnswerForm errors values are dropped
             self.request.session["answer_form_invalid"] = False
             self.request.session["answer_form_body"] = None
@@ -149,7 +154,7 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
         """Enables post request for question."""
         return super().post(request, *args, **kwargs)
 
-    def form_invalid(self, form, **kwargs):
+    def form_invalid(self, form):
         body_text = form["body"].value()
         self.request.session["answer_form_invalid"] = True
         self.request.session["answer_form_body"] = body_text
@@ -165,8 +170,11 @@ class QuestionAnswerFormView(SingleObjectMixin, LoginRequiredMixin, generic.Form
             question=Question.objects.get(id=self.kwargs.get("pk")),
             body=self.request.POST["body"],
         )
-        answer.save()
-        messages.success(self.request, "The answer was added successfully.")
+        try:
+            answer.save()
+            messages.success(self.request, "The answer was added successfully.")
+        except IntegrityError:
+            messages.error(self.request, "Identical answer already exists.")
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -200,6 +208,15 @@ class QuestionCreateView(LoginRequiredMixin, generic.CreateView):
     model = Question
     form_class = QuestionForm
     success_url = reverse_lazy("questions:questions")
+
+    def form_invalid(self, form):
+        guarded = xss_multiple_guard(
+            request=self.request, form=form, fields=("problem", "effort")
+        )
+        qd = self.request.POST.copy()
+        qd["problem"] = guarded.get("problem")
+        qd["effort"] = guarded.get("effort")
+        return super().form_invalid(QuestionForm(qd))
 
     def form_valid(self, form):
         """
