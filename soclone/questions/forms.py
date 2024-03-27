@@ -1,10 +1,34 @@
 """Forms for the questions app."""
+import nh3
 from django import forms
 from tinymce.widgets import TinyMCE
 
 from .models import Answer
 from .models import Question
 from .models import Tag
+from .utils.remove_tags import remove_tags
+
+
+class HtmlSanitizedCharField(forms.CharField):
+    """Ammonia HTML sanitization library protected attributes."""
+
+    min_length = 20
+
+    def to_python(self, value):
+        """Protects against malicious code in user input"""
+        value = super().to_python(value)
+        if value not in self.empty_values:
+            value = nh3.clean(value)
+        return value
+
+    def clean(self, value):
+        """Validates that the input is 20 characters long."""
+        value_length = len(remove_tags(value))
+        required = "This field is required."
+        short = f"Description is too short. Min length 20, got {value_length}."
+        if value_length < self.min_length:
+            raise forms.ValidationError(required if value_length == 0 else short)
+        return super().clean(value)
 
 
 class QuestionForm(forms.ModelForm):
@@ -20,7 +44,7 @@ class QuestionForm(forms.ModelForm):
         )
     )
 
-    problem = forms.CharField(
+    problem = HtmlSanitizedCharField(
         widget=TinyMCE(
             attrs={
                 "placeholder": "What are the details of your problem?\n"
@@ -33,7 +57,7 @@ class QuestionForm(forms.ModelForm):
         min_length=20,
     )
 
-    effort = forms.CharField(
+    effort = HtmlSanitizedCharField(
         widget=TinyMCE(
             attrs={
                 "placeholder": "What did you try and what were you expecting?\n"
@@ -61,7 +85,7 @@ class AnswerForm(forms.ModelForm):
         model = Answer
         fields = ["body"]
 
-    body = forms.CharField(
+    body = HtmlSanitizedCharField(
         widget=TinyMCE(
             attrs={
                 "placeholder": "Give a brief description of underlying conditions.\n"
