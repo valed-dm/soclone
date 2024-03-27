@@ -65,6 +65,7 @@ class Answer(UserMixin, TimestampMixin):
     """Answer model."""
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    # todo: replace 'body' attribute label for 'answer' after testing
     body = HTMLField(unique=True, validators=validators)
 
     def __str__(self):
