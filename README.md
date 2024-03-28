@@ -87,16 +87,24 @@ The following details how to deploy this application.
 
 See detailed [cookiecutter-django Heroku documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html).
 
-## Questions app blueprint
+## Questions
 
-Main questions page:
+Django 4.2 Приложение-форум для разработчиков.
+
+- Взаимопомощь
+- Возможность задать вопрос и получить детальный ответ
+- Рейтинговая система отбора лучших решений
+- Упорядоченный поиск вопросов-ответов с помощью тэгов
+
+
+Главная страница:
 
 [<img src="docs/images/img_01.png" width="1000"/>]()
 
-Blueprint for tags view:
+Страница тэгов (пока просто список):
 
 [<img src="docs/images/img_02.png" width="1000"/>]()
 
-QuestionsView(generic.ListView) SQL query:
+Просмотр вопроса:
 
 [<img src="docs/images/img_03.png" width="1000"/>]()
