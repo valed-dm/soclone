@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = BASE_DIR / "soclone"
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
@@ -82,10 +82,13 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
     "django_celery_beat",
+    "tinymce",
 ]
 
 LOCAL_APPS = [
+    "soclone.questions",
     "soclone.users",
     # Your stuff: custom apps go here
 ]
@@ -144,6 +147,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # custom middleware
+    "soclone.questions.middleware.QuestionViewMiddleware",
 ]
 
 # STATIC
@@ -317,6 +322,19 @@ SOCIALACCOUNT_ADAPTER = "soclone.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {"signup": "soclone.users.forms.UserSocialSignupForm"}
 
-
 # Your stuff...
 # ------------------------------------------------------------------------------
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        "APP": {
+            "client_id": "7f31b7c8191b16f7461f",
+            "secret": "ec72515b3bd42ca7c00ea502c1e327f4d6e409c8",
+            "key": "",
+        }
+    }
+}
+TEST_RUNNER = "test_runner.NonInteractiveTestRunner"

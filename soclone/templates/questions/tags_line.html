@@ -1,0 +1,5 @@
+{% for tag in question.tags.all %}
+  <span class="ms-2">{{ tag.name }}</span>
+{% empty %}
+  <span class="mx-2">not_tagged</span>
+{% endfor %}
