@@ -21,14 +21,14 @@ class HtmlSanitizedCharField(forms.CharField):
             value = nh3.clean(value)
         return value
 
-    def clean(self, value):
+    def validate(self, value):
         """Validates that the input is 20 characters long."""
         value_length = len(remove_tags(value))
         required = "This field is required."
         short = f"Description is too short. Min length 20, got {value_length}."
         if value_length < self.min_length:
             raise forms.ValidationError(required if value_length == 0 else short)
-        return super().clean(value)
+        return super().validate(value)
 
 
 class QuestionForm(forms.ModelForm):
