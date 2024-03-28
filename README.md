@@ -108,3 +108,11 @@ Django 4.2 Приложение-форум для разработчиков.
 Просмотр вопроса:
 
 [<img src="docs/images/img_03.png" width="1000"/>]()
+
+Форма ответа:
+
+[<img src="docs/images/img_04.png" width="1000"/>]()
+
+Ответ добавлен:
+
+[<img src="docs/images/img_05.png" width="1000"/>]()
